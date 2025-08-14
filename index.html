@@ -2121,5 +2121,42 @@
         });
         
     </script>
+    <script>
+function showSection(sectionId) {
+  // Hide all content sections
+  document.querySelectorAll('.content-section').forEach(function(section) {
+    section.classList.remove('active');
+    section.style.display = 'none';
+  });
+
+  // Remove 'active' from all sidebar links
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    link.classList.remove('active');
+  });
+
+  // Show the selected section
+  var section = document.getElementById(sectionId);
+  if (section) {
+    section.classList.add('active');
+    section.style.display = '';
+  }
+
+  // Add 'active' to the relevant sidebar link
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    if (link.getAttribute('href') === '#' + sectionId) {
+      link.classList.add('active');
+    }
+  });
+}
+
+// On page load, hide all except the active one
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.content-section').forEach(function(section) {
+    if (!section.classList.contains('active')) {
+      section.style.display = 'none';
+    }
+  });
+});
+</script>
 </body>
 </html>
