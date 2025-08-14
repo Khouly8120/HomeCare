@@ -1,0 +1,270 @@
+/* Actions Needed Dashboard Styles */
+
+.actions-dashboard {
+    padding: 20px 0;
+}
+
+/* Timeline Styles for Workflow Details */
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+    padding-left: 70px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 22px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid #dee2e6;
+    background: white;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.timeline-item.pending .timeline-marker {
+    background: #ffc107;
+    border-color: #ffc107;
+}
+
+.timeline-item.upcoming .timeline-marker {
+    background: #6c757d;
+    border-color: #6c757d;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #dee2e6;
+}
+
+.timeline-item.completed .timeline-content {
+    border-left-color: #28a745;
+}
+
+.timeline-item.pending .timeline-content {
+    border-left-color: #ffc107;
+}
+
+.timeline-item.upcoming .timeline-content {
+    border-left-color: #6c757d;
+}
+
+/* Progress Bar Enhancements */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.progress-bar {
+    border-radius: 4px;
+}
+
+/* Card Enhancements for Actions */
+.actions-dashboard .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.actions-dashboard .card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Status Badge Styles */
+.badge {
+    font-size: 0.75em;
+    padding: 0.35em 0.65em;
+}
+
+/* Priority Colors */
+.bg-high-priority {
+    background-color: #dc3545 !important;
+}
+
+.bg-medium-priority {
+    background-color: #ffc107 !important;
+}
+
+.bg-low-priority {
+    background-color: #28a745 !important;
+}
+
+/* Table Enhancements */
+.actions-dashboard .table {
+    margin-bottom: 0;
+}
+
+.actions-dashboard .table th {
+    border-top: none;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.actions-dashboard .table-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Button Group Spacing */
+.actions-dashboard .btn-group .btn {
+    margin-right: 5px;
+}
+
+.actions-dashboard .btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+/* Tab Enhancements */
+.actions-dashboard .nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.actions-dashboard .nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.actions-dashboard .nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.actions-dashboard .nav-tabs .nav-link.active {
+    color: #007bff;
+    background-color: transparent;
+    border-bottom-color: #007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .timeline-item {
+        padding-left: 50px;
+    }
+    
+    .timeline::before {
+        left: 20px;
+    }
+    
+    .timeline-marker {
+        left: 12px;
+    }
+    
+    .actions-dashboard .btn-group {
+        flex-direction: column;
+    }
+    
+    .actions-dashboard .btn-group .btn {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+}
+
+/* Alert Enhancements */
+.actions-dashboard .alert {
+    border: none;
+    border-radius: 8px;
+}
+
+/* Calendar View Styles */
+.upcoming-actions-list .card {
+    border-left: 4px solid #007bff;
+}
+
+.upcoming-actions-list .card:hover {
+    border-left-color: #0056b3;
+}
+
+/* Loading Animation */
+.actions-dashboard .fa-spin {
+    animation: fa-spin 2s infinite linear;
+}
+
+/* Custom Scrollbar for Long Lists */
+.actions-dashboard .table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: #dee2e6 #f8f9fa;
+}
+
+.actions-dashboard .table-responsive::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.actions-dashboard .table-responsive::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.actions-dashboard .table-responsive::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 4px;
+}
+
+.actions-dashboard .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+}
+
+/* Action Item Hover Effects */
+.actions-dashboard .table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Icon Spacing */
+.actions-dashboard .fas,
+.actions-dashboard .far {
+    margin-right: 8px;
+}
+
+/* Step Status Colors */
+.step-status-completed {
+    color: #28a745;
+}
+
+.step-status-in-progress {
+    color: #007bff;
+}
+
+.step-status-pending {
+    color: #ffc107;
+}
+
+.step-status-overdue {
+    color: #dc3545;
+}
+
+/* Workflow Progress Indicators */
+.workflow-progress-low {
+    background-color: #dc3545;
+}
+
+.workflow-progress-medium {
+    background-color: #ffc107;
+}
+
+.workflow-progress-high {
+    background-color: #28a745;
+}
