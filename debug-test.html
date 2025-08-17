@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Debug Test - Data Mapping</h1>
+    
+    <div class="debug">
+        <h3>localStorage Data:</h3>
+        <div id="storage-debug"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>Patient Table Test:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Phone Number</th>
+                    <th>Number of Visits</th>
+                </tr>
+            </thead>
+            <tbody id="test-patients-table">
+                <tr><td colspan="4">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="debug">
+        <h3>Provider Table Test:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile Phone</th>
+                    <th>Email</th>
+                    <th>Rate</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody id="test-providers-table">
+                <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        function debugStorage() {
+            const storageDiv = document.getElementById('storage-debug');
+            
+            // Check patients
+            const patientsRaw = localStorage.getItem('patients');
+            const providersRaw = localStorage.getItem('providers');
+            
+            let html = '<h4>Patients Data:</h4>';
+            if (patientsRaw) {
+                try {
+                    const patients = JSON.parse(patientsRaw);
+                    html += `<p>Count: ${patients.length}</p>`;
+                    if (patients.length > 0) {
+                        html += `<p>First patient keys: ${Object.keys(patients[0]).join(', ')}</p>`;
+                        html += `<pre>${JSON.stringify(patients[0], null, 2)}</pre>`;
+                    }
+                } catch (e) {
+                    html += `<p>Error parsing: ${e.message}</p>`;
+                }
+            } else {
+                html += '<p>No patients data found</p>';
+            }
+            
+            html += '<h4>Providers Data:</h4>';
+            if (providersRaw) {
+                try {
+                    const providers = JSON.parse(providersRaw);
+                    html += `<p>Count: ${providers.length}</p>`;
+                    if (providers.length > 0) {
+                        html += `<p>First provider keys: ${Object.keys(providers[0]).join(', ')}</p>`;
+                        html += `<pre>${JSON.stringify(providers[0], null, 2)}</pre>`;
+                    }
+                } catch (e) {
+                    html += `<p>Error parsing: ${e.message}</p>`;
+                }
+            } else {
+                html += '<p>No providers data found</p>';
+            }
+            
+            storageDiv.innerHTML = html;
+        }
+        
+        function testPatientTable() {
+            const tableBody = document.getElementById('test-patients-table');
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            
+            if (patients.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4">No patients found</td></tr>';
+                return;
+            }
+            
+            tableBody.innerHTML = patients.map(patient => {
+                // Test all possible field combinations
+                const allKeys = Object.keys(patient);
+                console.log('Patient keys:', allKeys);
+                console.log('Patient data:', patient);
+                
+                // Try to extract name
+                let name = 'Unknown';
+                if (patient.name) name = patient.name;
+                else if (patient.Name) name = patient.Name;
+                else if (patient['Patient Name']) name = patient['Patient Name'];
+                else if (patient.firstName && patient.lastName) name = `${patient.firstName} ${patient.lastName}`;
+                else if (patient['First Name'] && patient['Last Name']) name = `${patient['First Name']} ${patient['Last Name']}`;
+                
+                // Try to extract DOB
+                let dob = 'N/A';
+                if (patient.dob) dob = patient.dob;
+                else if (patient.DOB) dob = patient.DOB;
+                else if (patient['Date of Birth']) dob = patient['Date of Birth'];
+                else if (patient.birthdate) dob = patient.birthdate;
+                
+                // Try to extract phone
+                let phone = 'N/A';
+                if (patient.phone) phone = patient.phone;
+                else if (patient.Phone) phone = patient.Phone;
+                else if (patient['Phone Number']) phone = patient['Phone Number'];
+                else if (patient.mobile) phone = patient.mobile;
+                else if (patient['Mobile Phone']) phone = patient['Mobile Phone'];
+                
+                // Try to extract visits
+                let visits = '0';
+                if (patient.visits) visits = patient.visits;
+                else if (patient['Number of Visits']) visits = patient['Number of Visits'];
+                else if (patient.numberOfVisits) visits = patient.numberOfVisits;
+                
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${dob}</td>
+                        <td>${phone}</td>
+                        <td>${visits}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function testProviderTable() {
+            const tableBody = document.getElementById('test-providers-table');
+            const providers = JSON.parse(localStorage.getItem('providers') || '[]');
+            
+            if (providers.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5">No providers found</td></tr>';
+                return;
+            }
+            
+            tableBody.innerHTML = providers.map(provider => {
+                console.log('Provider keys:', Object.keys(provider));
+                console.log('Provider data:', provider);
+                
+                // Extract name
+                let name = 'Unknown';
+                if (provider.name) name = provider.name;
+                else if (provider.Name) name = provider.Name;
+                else if (provider['Provider Name']) name = provider['Provider Name'];
+                else if (provider.firstName && provider.lastName) name = `${provider.firstName} ${provider.lastName}`;
+                
+                // Extract phone
+                let phone = 'Not provided';
+                if (provider.phone) phone = provider.phone;
+                else if (provider.Phone) phone = provider.Phone;
+                else if (provider['Mobile Phone']) phone = provider['Mobile Phone'];
+                else if (provider.mobile) phone = provider.mobile;
+                
+                // Extract email
+                let email = 'N/A';
+                if (provider.email) email = provider.email;
+                else if (provider.Email) email = provider.Email;
+                else if (provider['Email Address']) email = provider['Email Address'];
+                
+                // Extract rate
+                let rate = 'N/A';
+                if (provider.rate) rate = `$${provider.rate}`;
+                else if (provider.Rate) rate = `$${provider.Rate}`;
+                
+                // Extract position
+                let position = 'N/A';
+                if (provider.position) position = provider.position;
+                else if (provider.Position) position = provider.Position;
+                else if (provider.specialty) position = provider.specialty;
+                else if (provider.Specialty) position = provider.Specialty;
+                
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${phone}</td>
+                        <td>${email}</td>
+                        <td>${rate}</td>
+                        <td>${position}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Run tests on load
+        window.onload = function() {
+            debugStorage();
+            testPatientTable();
+            testProviderTable();
+        };
+    </script>
+</body>
+</html>

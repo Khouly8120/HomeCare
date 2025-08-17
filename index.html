@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Care PT Manager</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="actions-styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <button class="btn btn-light me-3" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle Sidebar" style="border: 2px solid white; font-size: 18px; padding: 8px 12px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="#"><i class="fas fa-heartbeat"></i> Home Care PT Manager</a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">Welcome, Project Manager</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <!-- STREAMLINED WORKFLOW NAVIGATION -->
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#patients" onclick="showSection('patients')">
+                                <i class="fas fa-user-injured"></i> Patient Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#providers" onclick="showSection('providers')">
+                                <i class="fas fa-user-md"></i> Provider Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#actions-needed" onclick="showSection('actions-needed')">
+                                <i class="fas fa-clipboard-check"></i> Actions Needed
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#referrals" onclick="showSection('referrals')">
+                                <i class="fas fa-share-alt"></i> Referrals & Intake
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#benefits" onclick="showSection('benefits')">
+                                <i class="fas fa-file-medical"></i> Benefits & Authorization
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#scheduling" onclick="showSection('scheduling')">
+                                <i class="fas fa-calendar-alt"></i> Scheduling
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#documentation" onclick="showSection('documentation')">
+                                <i class="fas fa-file-alt"></i> Documentation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#insurance" onclick="showSection('insurance')">
+                                <i class="fas fa-file-invoice-dollar"></i> Billing & Claims
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#dashboard" onclick="showSection('dashboard')">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard & Reports
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!--                                                          Section (First Page) -->
+                <div id="patients" class="content-section active">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Patient Management</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-primary" onclick="addNewPatient()">
+                                    <i class="fas fa-user-plus"></i> Add Patient
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="showPatientImportModal()">
+                                    <i class="fas fa-upload"></i> Import CSV
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="exportPatients()">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Filters -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter" onchange="filterPatients()">
+                                <option value="all">All Statuses</option>
+                                <option value="interested">Interested</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="insuranceFilter" onchange="filterPatients()">
+                                <option value="all">All Insurance</option>
+                                <option value="medicare">Medicare</option>
+                                <option value="medicaid">Medicaid</option>
+                                <option value="private">Private Insurance</option>
+                                <option value="self-pay">Self Pay</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="searchPatients" placeholder="Search patients..." onkeyup="filterPatients()">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patients Table - Comprehensive Version -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Date of Birth</th>
+                                            <th>Phone Number</th>
+                                            <th>Number of Visits</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="patientsTableBody">
+                                        <!-- Patient data will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Patient Details Modal -->
+                    <div class="modal fade" id="patientDetailsModal" tabindex="-1">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Patient Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="patientDetailsForm">
+                                        <div class="row">
+                                            <!-- Basic Information -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-3">Basic Information</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">First Name</label>
+                                                    <input type="text" class="form-control" id="firstName" name="firstName">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Last Name</label>
+                                                    <input type="text" class="form-control" id="lastName" name="lastName">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Mobile</label>
+                                                    <input type="text" class="form-control" id="mobile" name="mobile">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Birthdate</label>
+                                                    <input type="date" class="form-control" id="birthdate" name="birthdate">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Email Address</label>
+                                                    <input type="email" class="form-control" id="emailAddress" name="emailAddress">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Home Phone</label>
+                                                    <input type="text" class="form-control" id="homePhone" name="homePhone">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Fax</label>
+                                                    <input type="text" class="form-control" id="fax" name="fax">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">EMR ID</label>
+                                                    <input type="text" class="form-control" id="emrId" name="emrId">
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Address Information -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-3">Address Information</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Primary Address</label>
+                                                    <input type="text" class="form-control" id="primaryAddress" name="primaryAddress">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Primary Address City</label>
+                                                    <input type="text" class="form-control" id="primaryAddressCity" name="primaryAddressCity">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Primary Address Postal Code</label>
+                                                    <input type="text" class="form-control" id="primaryAddressPostalcode" name="primaryAddressPostalcode">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Address</label>
+                                                    <input type="text" class="form-control" id="address" name="address">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <!-- Insurance Information -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-3">Insurance Information</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Insurance 1</label>
+                                                    <input type="text" class="form-control" id="insurance1" name="insurance1">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Insurance 2</label>
+                                                    <input type="text" class="form-control" id="insurance2" name="insurance2">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Insurance ID 1</label>
+                                                    <input type="text" class="form-control" id="insuranceId1" name="insuranceId1">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Insurance ID 2</label>
+                                                    <input type="text" class="form-control" id="insuranceId2" name="insuranceId2">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Insurance Status 1</label>
+                                                    <select class="form-control" id="insuranceStatus1" name="insuranceStatus1">
+                                                        <option value="">Select Status</option>
+                                                        <option value="active">Active</option>
+                                                        <option value="inactive">Inactive</option>
+                                                        <option value="pending">Pending</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Insurance Status 2</label>
+                                                    <select class="form-control" id="insuranceStatus2" name="insuranceStatus2">
+                                                        <option value="">Select Status</option>
+                                                        <option value="active">Active</option>
+                                                        <option value="inactive">Inactive</option>
+                                                        <option value="pending">Pending</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Authorization</label>
+                                                    <input type="text" class="form-control" id="authorization" name="authorization">
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Status & Care Information -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-3">Status & Care Information</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Status</label>
+                                                    <select class="form-control" id="status" name="status">
+                                                        <option value="interested">Interested</option>
+                                                        <option value="scheduled">Scheduled</option>
+                                                        <option value="in-progress">In Progress</option>
+                                                        <option value="completed">Completed</option>
+                                                        <option value="cancelled">Cancelled</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Status Description</label>
+                                                    <input type="text" class="form-control" id="statusDescription" name="statusDescription">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">PT</label>
+                                                    <input type="text" class="form-control" id="pt" name="pt">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Next Appt</label>
+                                                    <input type="datetime-local" class="form-control" id="nextAppt" name="nextAppt">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Patient Schedule Date</label>
+                                                    <input type="date" class="form-control" id="patientScheduleDate" name="patientScheduleDate">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Next Follow up Date</label>
+                                                    <input type="date" class="form-control" id="nextFollowUpDate" name="nextFollowUpDate">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Last Action Date</label>
+                                                    <input type="date" class="form-control" id="lastActionDate" name="lastActionDate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <!-- Referral & Source Information -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-3">Referral & Source Information</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">New Patient Source</label>
+                                                    <input type="text" class="form-control" id="newPatientSource" name="newPatientSource">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Referred By</label>
+                                                    <input type="text" class="form-control" id="referredBy" name="referredBy">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Referring Facility</label>
+                                                    <input type="text" class="form-control" id="referringFacility" name="referringFacility">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Physician ID</label>
+                                                    <input type="text" class="form-control" id="physicianId" name="physicianId">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Physician NPI</label>
+                                                    <input type="text" class="form-control" id="physicianNpi" name="physicianNpi">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Source of Lead</label>
+                                                    <input type="text" class="form-control" id="sourceOfLead" name="sourceOfLead">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Booking Source</label>
+                                                    <input type="text" class="form-control" id="bookingSource" name="bookingSource">
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Additional Information -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-3">Additional Information</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Clinic Name</label>
+                                                    <input type="text" class="form-control" id="clinicName" name="clinicName">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Converted</label>
+                                                    <select class="form-control" id="converted" name="converted">
+                                                        <option value="">Select</option>
+                                                        <option value="yes">Yes</option>
+                                                        <option value="no">No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Do Not Call</label>
+                                                    <select class="form-control" id="doNotCall" name="doNotCall">
+                                                        <option value="no">No</option>
+                                                        <option value="yes">Yes</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Portal Application</label>
+                                                    <input type="text" class="form-control" id="portalApplication" name="portalApplication">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Number of Attempts</label>
+                                                    <input type="number" class="form-control" id="numberOfAttempts" name="numberOfAttempts">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Lost Reason</label>
+                                                    <input type="text" class="form-control" id="lostReason" name="lostReason">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <!-- Notes & Follow-up -->
+                                            <div class="col-md-12">
+                                                <h6 class="text-primary mb-3">Notes & Follow-up</h6>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Patient Feedback</label>
+                                                            <textarea class="form-control" id="patientFeedback" name="patientFeedback" rows="3"></textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Notes</label>
+                                                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Notes 2</label>
+                                                            <textarea class="form-control" id="notes2" name="notes2" rows="3"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Details/Comments</label>
+                                                            <textarea class="form-control" id="detailsComments" name="detailsComments" rows="3"></textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Latest Follow-Up Action Taken</label>
+                                                            <textarea class="form-control" id="latestFollowUpActionTaken" name="latestFollowUpActionTaken" rows="3"></textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Next Follow-up Action</label>
+                                                            <textarea class="form-control" id="nextFollowUpAction" name="nextFollowUpAction" rows="3"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Hidden System Fields -->
+                                        <input type="hidden" id="patientId" name="patientId">
+                                        <input type="hidden" id="dateCreated" name="dateCreated">
+                                        <input type="hidden" id="dateModified" name="dateModified">
+                                        <input type="hidden" id="deleted" name="deleted" value="false">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-primary" onclick="savePatientDetails()">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheduling Section -->
+                <div id="scheduling" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Scheduling</h1>
+                        <button class="btn btn-primary" onclick="scheduleAppointment()">
+                            <i class="fas fa-plus"></i> Schedule Appointment
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div id="calendar">Calendar will be implemented here</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insurance & Payments Section -->
+                <div id="insurance" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Insurance & Payments</h1>
+                        <button class="btn btn-primary" onclick="addInsuranceClaim()">
+                            <i class="fas fa-plus"></i> Add Claim
+                        </button>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Claims</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="approvedClaims">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Claims</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingClaims">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Insurance</th>
+                                            <th>Claim Amount</th>
+                                            <th>Status</th>
+                                            <th>Date Submitted</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="insuranceTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Management Section -->
+                <div id="providers" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Provider Management</h1>
+                        <div>
+                            <button type="button" class="btn btn-success" onclick="showProviderImportModal()">
+                                <i class="fas fa-upload"></i> Import Provider Data
+                            </button>
+                            <button class="btn btn-primary me-2" onclick="addNewProvider()">
+                                <i class="fas fa-plus"></i> Add Provider
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="clearAllProviderData()" title="Clear all provider data">
+                                <i class="fas fa-trash-alt"></i> Clear All Data
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Provider Filters -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="providerSearch" class="form-control" placeholder="Search providers..." onkeyup="renderProvidersTable()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="providerStatusFilter" class="form-select" onchange="renderProvidersTable()">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="providerSpecialtyFilter" class="form-select" onchange="renderProvidersTable()">
+                                <option value="">All Specialties</option>
+                                <option value="PT">Physical Therapist</option>
+                                <option value="PTA">Physical Therapist Assistant</option>
+                                <option value="OT">Occupational Therapist</option>
+                                <option value="COTA">Certified OT Assistant</option>
+                                <option value="SLP">Speech Language Pathologist</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="providerSortBy" class="form-select" onchange="renderProvidersTable()">
+                                <option value="name-asc">Sort by Name (A-Z)</option>
+                                <option value="name-desc">Sort by Name (Z-A)</option>
+                                <option value="specialty-asc">Sort by Specialty (A-Z)</option>
+                                <option value="specialty-desc">Sort by Specialty (Z-A)</option>
+                                <option value="status-asc">Sort by Status (A-Z)</option>
+                                <option value="status-desc">Sort by Status (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Providers Table -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="providers-table-container">
+                                <!-- Provider table will be rendered here by JavaScript -->
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Mobile Phone</th>
+                                                <th>Email</th>
+                                                <th>Rate</th>
+                                                <th>Position</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="providersTableBody">
+                                            <!-- Provider rows will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Details Modal -->
+                <div class="modal fade" id="providerDetailsModal" tabindex="-1" aria-labelledby="providerDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="providerDetailsModalLabel">Provider Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="providerDetailsForm">
+                                    <div class="row">
+                                        <!-- Provider ID -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerIdField" class="form-label">Provider ID</label>
+                                            <input type="text" class="form-control" id="providerIdField" readonly>
+                                        </div>
+                                        <!-- First Name -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerFirstNameField" class="form-label">First Name</label>
+                                            <input type="text" class="form-control" id="providerFirstNameField">
+                                        </div>
+                                        <!-- Last Name -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerLastNameField" class="form-label">Last Name</label>
+                                            <input type="text" class="form-control" id="providerLastNameField">
+                                        </div>
+                                        <!-- PT License # -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerLicenseField" class="form-label">PT License #</label>
+                                            <input type="text" class="form-control" id="providerLicenseField">
+                                        </div>
+                                        <!-- State of Licensure -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerLicenseStateField" class="form-label">State of Licensure</label>
+                                            <input type="text" class="form-control" id="providerLicenseStateField">
+                                        </div>
+                                        <!-- Email Address -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerEmailField" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="providerEmailField">
+                                        </div>
+                                        <!-- Mobile Phone -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerMobileField" class="form-label">Mobile Phone</label>
+                                            <input type="tel" class="form-control" id="providerMobileField">
+                                        </div>
+                                        <!-- Emergency Contact Name -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerEmergencyNameField" class="form-label">Emergency Contact Name</label>
+                                            <input type="text" class="form-control" id="providerEmergencyNameField">
+                                        </div>
+                                        <!-- Emergency Contact Phone -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerEmergencyPhoneField" class="form-label">Emergency Contact Phone</label>
+                                            <input type="tel" class="form-control" id="providerEmergencyPhoneField">
+                                        </div>
+                                        <!-- Address -->
+                                        <div class="col-md-12 mb-3">
+                                            <label for="providerAddressField" class="form-label">Address</label>
+                                            <textarea class="form-control" id="providerAddressField" rows="2"></textarea>
+                                        </div>
+                                        <!-- Borough -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerBoroughField" class="form-label">Borough</label>
+                                            <input type="text" class="form-control" id="providerBoroughField">
+                                        </div>
+                                        <!-- Service Area Zip Codes -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerServiceAreaField" class="form-label">Service Area Zip Codes</label>
+                                            <input type="text" class="form-control" id="providerServiceAreaField" placeholder="e.g., 10001, 10002, 10003">
+                                        </div>
+                                        <!-- Position -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerPositionField" class="form-label">Position</label>
+                                            <select class="form-select" id="providerPositionField">
+                                                <option value="">Select Position</option>
+                                                <option value="PT">Physical Therapist</option>
+                                                <option value="PTA">Physical Therapist Assistant</option>
+                                                <option value="OT">Occupational Therapist</option>
+                                                <option value="COTA">Certified OT Assistant</option>
+                                                <option value="SLP">Speech Language Pathologist</option>
+                                            </select>
+                                        </div>
+                                        <!-- Rate -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerRateField" class="form-label">Rate</label>
+                                            <input type="number" class="form-control" id="providerRateField" step="0.01" min="0">
+                                        </div>
+                                        <!-- Payment Type -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerPaymentTypeField" class="form-label">Payment Type</label>
+                                            <select class="form-select" id="providerPaymentTypeField">
+                                                <option value="">Select Payment Type</option>
+                                                <option value="hourly">Hourly</option>
+                                                <option value="per-visit">Per Visit</option>
+                                                <option value="salary">Salary</option>
+                                                <option value="contract">Contract</option>
+                                            </select>
+                                        </div>
+                                        <!-- General Availability -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerGeneralAvailabilityField" class="form-label">General Availability</label>
+                                            <select class="form-select" id="providerGeneralAvailabilityField">
+                                                <option value="">Select Availability</option>
+                                                <option value="full-time">Full Time</option>
+                                                <option value="part-time">Part Time</option>
+                                                <option value="per-diem">Per Diem</option>
+                                                <option value="contract">Contract</option>
+                                            </select>
+                                        </div>
+                                        <!-- Availability Days -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerAvailabilityDaysField" class="form-label">Availability Days</label>
+                                            <input type="text" class="form-control" id="providerAvailabilityDaysField" placeholder="e.g., Mon, Wed, Fri">
+                                        </div>
+                                        <!-- Availability Timings from -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerAvailabilityFromField" class="form-label">Availability Timings From</label>
+                                            <input type="time" class="form-control" id="providerAvailabilityFromField">
+                                        </div>
+                                        <!-- Availability Timings till -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerAvailabilityTillField" class="form-label">Availability Timings Till</label>
+                                            <input type="time" class="form-control" id="providerAvailabilityTillField">
+                                        </div>
+                                        <!-- Start Date -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerStartDateField" class="form-label">Start Date</label>
+                                            <input type="date" class="form-control" id="providerStartDateField">
+                                        </div>
+                                        <!-- Status -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerStatusField" class="form-label">Status</label>
+                                            <select class="form-select" id="providerStatusField">
+                                                <option value="">Select Status</option>
+                                                <option value="active">Active</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="inactive">Inactive</option>
+                                                <option value="on-hold">On Hold</option>
+                                            </select>
+                                        </div>
+                                        <!-- Notes -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerNotesField" class="form-label">Notes</label>
+                                            <textarea class="form-control" id="providerNotesField" rows="3"></textarea>
+                                        </div>
+                                        <!-- Notes 2 -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="providerNotes2Field" class="form-label">Notes 2</label>
+                                            <textarea class="form-control" id="providerNotes2Field" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="saveProviderDetails()">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Section (Last Page - Reports & Analytics) -->
+                <div id="dashboard" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Dashboard & Reports</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-primary" onclick="refreshDashboard()">
+                                    <i class="fas fa-sync-alt"></i> Refresh Data
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="exportExecutiveSummary()">
+                                    <i class="fas fa-chart-pie"></i> Executive Summary
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="exportKPIReport()">
+                                    <i class="fas fa-tachometer-alt"></i> KPI Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Tabs -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <ul class="nav nav-tabs" id="dashboardTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                                        <i class="fas fa-tachometer-alt"></i> Overview
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="forecasting-tab" data-bs-toggle="tab" data-bs-target="#forecasting" type="button" role="tab">
+                                        <i class="fas fa-chart-line"></i> Forecasting & Staffing
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                                        <i class="fas fa-file-alt"></i> Reports
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="dashboardTabContent">
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                            <!-- KPI Cards -->
+                            <div id="dashboard-content"></div>
+ 
+                            <!-- Charts Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Patient Status Distribution</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="patientStatusChart" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Monthly Revenue Trend</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="revenueChart" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Forecasting & Staffing Tab -->
+                        <div class="tab-pane fade" id="forecasting" role="tabpanel">
+                            <div id="forecastingDashboardContainer">
+                                <!-- Demand Forecast Section -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header bg-primary text-white">
+                                                <h5 class="mb-0"><i class="fas fa-chart-line"></i> Demand Forecast - Next 30 Days</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="metric-box">
+                                                            <h3 class="text-primary" id="expectedPatients">125</h3>
+                                                            <p class="text-muted">Expected New Patients</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="metric-box">
+                                                            <h3 class="text-success" id="projectedSessions">450</h3>
+                                                            <p class="text-muted">Projected Sessions</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="metric-box">
+                                                            <h3 class="text-warning" id="peakDemandDays">8</h3>
+                                                            <p class="text-muted">Peak Demand Days</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <canvas id="demandForecastChart" height="80"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Staffing Needs Section -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header bg-success text-white">
+                                                <h5 class="mb-0"><i class="fas fa-users"></i> Staffing Needs Analysis</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Role</th>
+                                                                <th>Current</th>
+                                                                <th>Required</th>
+                                                                <th>Gap</th>
+                                                                <th>Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="staffingNeedsTable">
+                                                            <tr>
+                                                                <td>Physical Therapists</td>
+                                                                <td>8</td>
+                                                                <td>12</td>
+                                                                <td class="text-danger">-4</td>
+                                                                <td><span class="badge bg-danger">Shortage</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>PT Assistants</td>
+                                                                <td>5</td>
+                                                                <td>6</td>
+                                                                <td class="text-warning">-1</td>
+                                                                <td><span class="badge bg-warning">Minor Gap</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Occupational Therapists</td>
+                                                                <td>4</td>
+                                                                <td>4</td>
+                                                                <td class="text-success">0</td>
+                                                                <td><span class="badge bg-success">Adequate</span></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header bg-warning text-white">
+                                                <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Credentialing Alerts</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="alert alert-warning" role="alert">
+                                                    <strong>3 Providers</strong> have credentials expiring within 30 days
+                                                </div>
+                                                <ul class="list-group" id="credentialingAlerts">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        Dr. Sarah Johnson
+                                                        <span class="badge bg-danger rounded-pill">Expires in 7 days</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        Michael Chen, PT
+                                                        <span class="badge bg-warning rounded-pill">Expires in 15 days</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        Lisa Williams, PTA
+                                                        <span class="badge bg-warning rounded-pill">Expires in 28 days</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recommendations Section -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header bg-info text-white">
+                                                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> AI-Powered Recommendations</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row" id="recommendationsContainer">
+                                                    <div class="col-md-4">
+                                                        <div class="recommendation-card">
+                                                            <i class="fas fa-user-plus fa-2x text-primary mb-2"></i>
+                                                            <h6>Recruitment Priority</h6>
+                                                            <p class="small">Hire 2 PT specialists for Brooklyn area by month-end to meet projected demand.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="recommendation-card">
+                                                            <i class="fas fa-calendar-alt fa-2x text-success mb-2"></i>
+                                                            <h6>Schedule Optimization</h6>
+                                                            <p class="small">Shift Tuesday afternoon slots to Thursday to balance provider utilization.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="recommendation-card">
+                                                            <i class="fas fa-route fa-2x text-warning mb-2"></i>
+                                                            <h6>Route Planning</h6>
+                                                            <p class="small">Group Queens patients on same days to reduce travel time by 25%.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reports Tab -->
+                        <div class="tab-pane fade" id="reports" role="tabpanel">
+                            <div id="reportingDashboardContainer">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>Enhanced Reporting</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>Reporting dashboard content will be populated here</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Referrals & Leads Section -->
+                <div id="referrals" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Referrals & Leads</h1>
+                        <div>
+                            <button class="btn btn-success" onclick="showImportModal('referrals')">
+                                <i class="fas fa-upload"></i> Import Referral Data
+                            </button>
+                            <button class="btn btn-primary" onclick="addNewReferral()">
+                                <i class="fas fa-plus"></i> Add Referral
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Referral Filters -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="referralSearch" class="form-control" placeholder="Search referrals..." onkeyup="filterReferrals()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="referralStatusFilter" class="form-select" onchange="filterReferrals()">
+                                <option value="">All Statuses</option>
+                                <option value="new">New</option>
+                                <option value="contacted">Contacted</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="converted">Converted</option>
+                                <option value="lost">Lost</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="referralSourceFilter" class="form-select" onchange="filterReferrals()">
+                                <option value="">All Sources</option>
+                                <option value="physician">Physician</option>
+                                <option value="hospital">Hospital</option>
+                                <option value="insurance">Insurance</option>
+                                <option value="self-referral">Self Referral</option>
+                                <option value="family">Family/Friend</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="referralSortBy" class="form-select" onchange="filterReferrals()">
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Referrals Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Referrals List</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient Name</th>
+                                            <th>Phone</th>
+                                            <th>Source</th>
+                                            <th>Condition</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="referralsTableBody">
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="fas fa-share-alt fa-2x mb-2"></i><br>
+                                                No referrals yet. Add your first referral to get started.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Management Section -->
+                <div id="tasks" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Task Management</h1>
+                        <button class="btn btn-primary" onclick="addNewPatient()">
+                            <i class="fas fa-plus"></i> Add Patient
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-warning text-white">
+                                    <h6>To Do</h6>
+                                </div>
+                                <div class="card-body" id="todoTasks">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h6>In Progress</h6>
+                                </div>
+                                <div class="card-body" id="inProgressTasks">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h6>Completed</h6>
+                                </div>
+                                <div class="card-body" id="completedTasks">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Actions Needed Section -->
+                <div id="actions-needed" class="content-section">
+                    <div id="actions-needed-content">
+                        <!-- Content will be loaded by actions-dashboard.js -->
+                    </div>
+                </div>
+
+                <!-- Benefits & Authorization Section -->
+                <div id="benefits" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Benefits & Authorization</h1>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="addBenefitsVerification()">
+                                <i class="fas fa-plus"></i> Add Benefits Verification
+                            </button>
+                            <button class="btn btn-success" onclick="addAuthorizationRequest()">
+                                <i class="fas fa-file-medical"></i> Add Authorization
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Benefits Verification Tab -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <ul class="nav nav-tabs" id="benefitsTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="verification-tab" data-bs-toggle="tab" data-bs-target="#verification" type="button" role="tab">
+                                        <i class="fas fa-check-circle"></i> Benefits Verification
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="authorization-tab" data-bs-toggle="tab" data-bs-target="#authorization" type="button" role="tab">
+                                        <i class="fas fa-file-medical"></i> Authorization Requests
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab">
+                                        <i class="fas fa-exclamation-triangle"></i> Alerts & Expirations
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="benefitsTabContent">
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                            <!-- KPI Cards -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-primary">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h4 class="card-title" id="totalPatients">5</h4>
+                                                    <p class="card-text">Total Patients</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-users fa-2x"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h4 class="card-title" id="activePatients">2</h4>
+                                                    <p class="card-text">Active Patients</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-user-check fa-2x"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-warning">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h4 class="card-title" id="pendingAuth">1</h4>
+                                                    <p class="card-text">Pending Auth</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-clock fa-2x"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-info">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h4 class="card-title" id="totalProviders">8</h4>
+                                                    <p class="card-text">Total Providers</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-user-md fa-2x"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Benefits Verification Tab -->
+                        <div class="tab-pane fade" id="verification" role="tabpanel">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-shield-alt"></i> Benefits Verification Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Patient</th>
+                                                    <th>Insurance</th>
+                                                    <th>Status</th>
+                                                    <th>Verification Date</th>
+                                                    <th>Benefits</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="benefitsVerificationTable">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Authorization Requests Tab -->
+                        <div class="tab-pane fade" id="authorization" role="tabpanel">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-file-medical"></i> Authorization Requests</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Patient</th>
+                                                    <th>Auth Number</th>
+                                                    <th>Status</th>
+                                                    <th>Visits</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="authorizationRequestsTable">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alerts & Expirations Tab -->
+                        <div class="tab-pane fade" id="alerts" role="tabpanel">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-exclamation-triangle"></i> Alerts & Expirations</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="alertsContainer">
+                                        <!-- Alerts will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Documentation Compliance Section -->
+                <div id="documentation" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Documentation Compliance</h1>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="refreshDocumentation()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn btn-success" onclick="exportDocumentationReport()">
+                                <i class="fas fa-file-export"></i> Export Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="documentationDashboardContainer">
+                        <!-- Documentation dashboard content will be populated here -->
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </main>
+        </div>
+   </div>
+
+    <!-- Hidden file input elements for import functionality -->
+    <input type="file" id="patient-file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+    <input type="file" id="provider-file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Force Refresh - Load Immediately -->
+    <script src="force-refresh.js?v=3"></script>
+    
+    <!-- Core Systems - Load First -->
+    <script src="data-inspector.js?v=2"></script>
+    <script src="dynamic-csv-import.js?v=2"></script>
+    <script src="script.js?v=2"></script>
+    
+    <!-- Optional Features - Load After Core -->
+    <script src="sample-data.js"></script>
+    <script src="patient-management.js"></script>
+    <script src="dashboard-functionality.js"></script>
+    <script src="provider-import-helpers.js"></script>
+    <script src="availability-matching.js"></script>
+    <script src="dashboard-analytics.js"></script>
+    <script src="modal-functions.js"></script>
+    <script src="providers.js"></script>
+    <script src="benefits-authorization.js"></script>
+    <script src="forecasting-staffing.js"></script>
+    <script src="documentation-compliance.js"></script>
+    <script src="feedback-system.js"></script>
+    <script src="enhanced-reporting.js"></script>
+    <script src="workflow-engine.js"></script>
+    <script src="workflow-dashboard.js"></script>
+    <script src="communication-hub.js"></script>
+    <script src="communication-dashboard.js"></script>
+    <script src="advanced-analytics.js"></script>
+    <script src="analytics-dashboard.js"></script>
+    <script src="quality-assurance.js"></script>
+    <script src="qa-dashboard.js"></script>
+    <script src="emergency-management.js"></script>
+    <script src="advanced-search.js"></script>
+    
+    <!-- Direct Working Import Functions -->
+    <script>
+        // Legacy import functions removed - using enhanced import system from data-import-enhanced.js
+        
+        // Comprehensive Patient Management Functions
+        
+        // View patient details in modal
+        function viewPatientDetails(patientId) {
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            const patient = patients.find(p => (p.id || p.patientId) === patientId);
+            
+            if (patient) {
+                populatePatientForm(patient, true); // true = read-only mode
+                document.getElementById('patientDetailsModal').querySelector('.modal-title').textContent = 'Patient Details (View Only)';
+                document.querySelector('#patientDetailsModal .btn-primary').style.display = 'none';
+                new bootstrap.Modal(document.getElementById('patientDetailsModal')).show();
+            }
+        }
+        
+        // Edit patient details in modal
+        function editPatientDetails(patientId) {
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            const patient = patients.find(p => (p.id || p.patientId) === patientId);
+            
+            if (patient) {
+                populatePatientForm(patient, false); // false = editable mode
+                document.getElementById('patientDetailsModal').querySelector('.modal-title').textContent = 'Edit Patient Details';
+                document.querySelector('#patientDetailsModal .btn-primary').style.display = 'block';
+                new bootstrap.Modal(document.getElementById('patientDetailsModal')).show();
+            }
+        }
+        
+        // Add new patient
+        function addNewPatient() {
+            // Clear form and set to add mode
+            document.getElementById('patientDetailsForm').reset();
+            document.getElementById('patientId').value = '';
+            document.getElementById('dateCreated').value = new Date().toISOString();
+            document.getElementById('patientDetailsModal').querySelector('.modal-title').textContent = 'Add New Patient';
+            document.querySelector('#patientDetailsModal .btn-primary').style.display = 'block';
+            new bootstrap.Modal(document.getElementById('patientDetailsModal')).show();
+        }
+        
+        // Populate patient form with data
+        function populatePatientForm(patient, readOnly = false) {
+            const form = document.getElementById('patientDetailsForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            
+            // Map patient data to form fields
+            const fieldMapping = {
+                'patientId': patient.id || patient.patientId || '',
+                'firstName': patient.firstName || '',
+                'lastName': patient.lastName || '',
+                'mobile': patient.mobile || patient.contactNumber || '',
+                'birthdate': patient.birthdate || '',
+                'emailAddress': patient.emailAddress || patient.email || '',
+                'homePhone': patient.homePhone || '',
+                'fax': patient.fax || '',
+                'emrId': patient.emrId || '',
+                'primaryAddress': patient.primaryAddress || patient.address || '',
+                'primaryAddressCity': patient.primaryAddressCity || '',
+                'primaryAddressPostalcode': patient.primaryAddressPostalcode || patient.zipCode || '',
+                'address': patient.address || '',
+                'insurance1': patient.insurance1 || patient.primaryInsurance || '',
+                'insurance2': patient.insurance2 || '',
+                'insuranceId1': patient.insuranceId1 || '',
+                'insuranceId2': patient.insuranceId2 || '',
+                'insuranceStatus1': patient.insuranceStatus1 || '',
+                'insuranceStatus2': patient.insuranceStatus2 || '',
+                'authorization': patient.authorization || '',
+                'status': patient.status || 'interested',
+                'statusDescription': patient.statusDescription || '',
+                'pt': patient.pt || patient.assignedPT || '',
+                'nextAppt': patient.nextAppt || '',
+                'patientScheduleDate': patient.patientScheduleDate || '',
+                'nextFollowUpDate': patient.nextFollowUpDate || '',
+                'lastActionDate': patient.lastActionDate || patient.lastContact || '',
+                'newPatientSource': patient.newPatientSource || '',
+                'referredBy': patient.referredBy || '',
+                'referringFacility': patient.referringFacility || '',
+                'physicianId': patient.physicianId || '',
+                'physicianNpi': patient.physicianNpi || '',
+                'sourceOfLead': patient.sourceOfLead || '',
+                'bookingSource': patient.bookingSource || '',
+                'clinicName': patient.clinicName || '',
+                'converted': patient.converted || '',
+                'doNotCall': patient.doNotCall || 'no',
+                'portalApplication': patient.portalApplication || '',
+                'numberOfAttempts': patient.numberOfAttempts || '0',
+                'lostReason': patient.lostReason || '',
+                'patientFeedback': patient.patientFeedback || '',
+                'notes': patient.notes || '',
+                'notes2': patient.notes2 || '',
+                'detailsComments': patient.detailsComments || '',
+                'latestFollowUpActionTaken': patient.latestFollowUpActionTaken || '',
+                'nextFollowUpAction': patient.nextFollowUpAction || '',
+                'dateCreated': patient.dateCreated || '',
+                'dateModified': patient.dateModified || '',
+                'deleted': patient.deleted || 'false'
+            };
+            
+            // Populate form fields
+            Object.keys(fieldMapping).forEach(fieldName => {
+                const field = form.querySelector(`[name="${fieldName}"]`);
+                if (field) {
+                    field.value = fieldMapping[fieldName];
+                    if (readOnly) {
+                        field.disabled = true;
+                    } else {
+                        field.disabled = false;
+                    }
+                }
+            });
+        }
+        
+        // Save patient details
+        function savePatientDetails() {
+            const form = document.getElementById('patientDetailsForm');
+            const formData = new FormData(form);
+            const patientData = {};
+            
+            // Convert form data to object
+            for (let [key, value] of formData.entries()) {
+                patientData[key] = value;
+            }
+            
+            // Set system fields
+            patientData.dateModified = new Date().toISOString();
+            if (!patientData.patientId) {
+                patientData.patientId = 'patient_' + Date.now();
+                patientData.dateCreated = new Date().toISOString();
+            }
+            
+            // Calculate number of visits (placeholder logic)
+            patientData.numberOfVisits = patientData.numberOfVisits || Math.floor(Math.random() * 10);
+            
+            // Get existing patients
+            let patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            
+            if (patientData.patientId && patients.find(p => (p.id || p.patientId) === patientData.patientId)) {
+                // Update existing patient
+                const index = patients.findIndex(p => (p.id || p.patientId) === patientData.patientId);
+                patients[index] = { ...patients[index], ...patientData, id: patientData.patientId };
+            } else {
+                // Add new patient
+                patientData.id = patientData.patientId;
+                patients.push(patientData);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('patients', JSON.stringify(patients));
+            
+            // Refresh table
+            setTimeout(() => {
+                const tableBody = document.getElementById('patientsTableBody');
+                if (tableBody) {
+                    const tableHTML = patients.map(patient => `
+                        <tr>
+                            <td>${(patient.firstName || '') + ' ' + (patient.lastName || '')}</td>
+                            <td>${patient.birthdate || 'N/A'}</td>
+                            <td>${patient.mobile || patient.contactNumber || 'N/A'}</td>
+                            <td>${patient.numberOfVisits || '0'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewPatientDetails('${patient.id || patient.patientId}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="editPatientDetails('${patient.id || patient.patientId}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deletePatient('${patient.id || patient.patientId}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    tableBody.innerHTML = tableHTML;
+                }
+            }, 100);
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('patientDetailsModal')).hide();
+            
+            alert('Patient details saved successfully!');
+        }
+        
+        // Delete patient
+        function deletePatient(patientId) {
+            if (confirm('Are you sure you want to delete this patient?')) {
+                let patients = JSON.parse(localStorage.getItem('patients') || '[]');
+                patients = patients.filter(p => (p.id || p.patientId) !== patientId);
+                localStorage.setItem('patients', JSON.stringify(patients));
+                
+                // Refresh table
+                setTimeout(() => {
+                    const tableBody = document.getElementById('patientsTableBody');
+                    if (tableBody) {
+                        const tableHTML = patients.map(patient => `
+                            <tr>
+                                <td>${(patient.firstName || '') + ' ' + (patient.lastName || '')}</td>
+                                <td>${patient.birthdate || 'N/A'}</td>
+                                <td>${patient.mobile || patient.contactNumber || 'N/A'}</td>
+                                <td>${patient.numberOfVisits || '0'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewPatientDetails('${patient.id || patient.patientId}')">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success me-1" onclick="editPatientDetails('${patient.id || patient.patientId}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deletePatient('${patient.id || patient.patientId}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+                        tableBody.innerHTML = tableHTML;
+                    }
+                }, 100);
+                
+                alert('Patient deleted successfully!');
+            }
+        }
+        
+        // Search patients
+        function searchPatients() {
+            const searchTerm = document.getElementById('searchPatients').value.toLowerCase();
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            
+            const filteredPatients = patients.filter(patient => {
+                const name = ((patient.firstName || '') + ' ' + (patient.lastName || '')).toLowerCase();
+                const phone = (patient.mobile || patient.contactNumber || '').toLowerCase();
+                const birthdate = (patient.birthdate || '').toLowerCase();
+                
+                return name.includes(searchTerm) || phone.includes(searchTerm) || birthdate.includes(searchTerm);
+            });
+            
+            // Update table with filtered results
+            const tableBody = document.getElementById('patientsTableBody');
+            if (tableBody) {
+                const tableHTML = filteredPatients.map(patient => `
+                    <tr>
+                        <td>${(patient.firstName || '') + ' ' + (patient.lastName || '')}</td>
+                        <td>${patient.birthdate || 'N/A'}</td>
+                        <td>${patient.mobile || patient.contactNumber || 'N/A'}</td>
+                        <td>${patient.numberOfVisits || '0'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="viewPatientDetails('${patient.id || patient.patientId}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-sm btn-outline-success me-1" onclick="editPatientDetails('${patient.id || patient.patientId}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deletePatient('${patient.id || patient.patientId}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                tableBody.innerHTML = tableHTML;
+            }
+        }
+        
+        // Make functions globally available
+        window.viewPatientDetails = viewPatientDetails;
+        window.editPatientDetails = editPatientDetails;
+        window.addNewPatient = addNewPatient;
+        window.savePatientDetails = savePatientDetails;
+        window.deletePatient = deletePatient;
+        window.searchPatients = searchPatients;
+        
+        // Debug function to check localStorage and force table refresh
+        window.debugPatientData = function() {
+            console.log('=== DEBUGGING PATIENT DATA ===');
+            const patients = localStorage.getItem('patients');
+            console.log('localStorage patients:', patients ? JSON.parse(patients).length : 0);
+            if (patients) {
+                const patientData = JSON.parse(patients);
+                console.log('First patient:', patientData[0]);
+                
+                // Force render the table directly
+                const tableContainer = document.getElementById('patients-table-container');
+                if (tableContainer) {
+                    console.log('Found table container, rendering patients...');
+                    const tableHTML = `
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>Insurance</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${patientData.map(patient => `
+                                        <tr>
+                                            <td>${patient.firstName} ${patient.lastName}</td>
+                                            <td>${patient.contactNumber || 'N/A'}</td>
+                                            <td>${patient.email || 'N/A'}</td>
+                                            <td>${patient.address || 'N/A'}</td>
+                                            <td>${patient.primaryInsurance || 'N/A'}</td>
+                                            <td><span class="badge bg-success">${patient.status}</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    tableContainer.innerHTML = tableHTML;
+                    console.log('✅ Table rendered with', patientData.length, 'patients');
+                } else {
+                    console.error('❌ Table container not found');
+                }
+            } else {
+                console.log('❌ No patient data in localStorage');
+            }
+        };
+        
+        // Auto-run debug after page loads
+        setTimeout(() => {
+            debugPatientData();
+        }, 2000);
+    </script>
+    
+    <script src="email-notifications.js"></script>
+    <script src="actions-needed.js"></script>
+    <script src="actions-dashboard.js"></script>
+    <script src="referrals.js"></script>
+    <script src="additional-features.js"></script>
+    <script>
+        // ===== PROVIDER MANAGEMENT FUNCTIONS =====
+        
+        // Global provider management functions
+        window.viewProviderDetails = function(providerId) {
+            console.log('Viewing provider details for ID:', providerId);
+            const providers = JSON.parse(localStorage.getItem('providers') || '[]');
+            const provider = providers.find(p => p.id === providerId);
+            
+            if (!provider) {
+                alert('Provider not found!');
+                return;
+            }
+            
+            // Populate all 23 provider fields
+            document.getElementById('providerIdField').value = provider.id || '';
+            document.getElementById('providerFirstNameField').value = provider.firstName || '';
+            document.getElementById('providerLastNameField').value = provider.lastName || '';
+            document.getElementById('providerLicenseField').value = provider.license || '';
+            document.getElementById('providerLicenseStateField').value = provider.licenseState || '';
+            document.getElementById('providerEmailField').value = provider.email || '';
+            document.getElementById('providerMobileField').value = provider.mobile || '';
+            document.getElementById('providerEmergencyNameField').value = provider.emergencyContactName || '';
+            document.getElementById('providerEmergencyPhoneField').value = provider.emergencyContactPhone || '';
+            document.getElementById('providerAddressField').value = provider.address || '';
+            document.getElementById('providerBoroughField').value = provider.borough || '';
+            document.getElementById('providerServiceAreaField').value = provider.serviceAreaZipCodes || '';
+            document.getElementById('providerPositionField').value = provider.position || '';
+            document.getElementById('providerRateField').value = provider.rate || '';
+            document.getElementById('providerPaymentTypeField').value = provider.paymentType || '';
+            document.getElementById('providerGeneralAvailabilityField').value = provider.generalAvailability || '';
+            document.getElementById('providerAvailabilityDaysField').value = provider.availabilityDays || '';
+            document.getElementById('providerAvailabilityFromField').value = provider.availabilityFrom || '';
+            document.getElementById('providerAvailabilityTillField').value = provider.availabilityTill || '';
+            document.getElementById('providerStartDateField').value = provider.startDate || '';
+            document.getElementById('providerStatusField').value = provider.status || '';
+            document.getElementById('providerNotesField').value = provider.notes || '';
+            document.getElementById('providerNotes2Field').value = provider.notes2 || '';
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('providerDetailsModal'));
+            modal.show();
+        };
+        
+        window.editProviderDetails = function(providerId) {
+            console.log('Editing provider details for ID:', providerId);
+            viewProviderDetails(providerId);
+        };
+        
+        window.saveProviderDetails = function() {
+            console.log('Saving provider details...');
+            
+            const providerId = document.getElementById('providerIdField').value;
+            const providers = JSON.parse(localStorage.getItem('providers') || '[]');
+            const providerIndex = providers.findIndex(p => p.id === providerId);
+            
+            if (providerIndex === -1) {
+                alert('Provider not found!');
+                return;
+            }
+            
+            // Update all 23 provider fields
+            providers[providerIndex] = {
+                ...providers[providerIndex],
+                firstName: document.getElementById('providerFirstNameField').value,
+                lastName: document.getElementById('providerLastNameField').value,
+                license: document.getElementById('providerLicenseField').value,
+                licenseState: document.getElementById('providerLicenseStateField').value,
+                email: document.getElementById('providerEmailField').value,
+                mobile: document.getElementById('providerMobileField').value,
+                emergencyContactName: document.getElementById('providerEmergencyNameField').value,
+                emergencyContactPhone: document.getElementById('providerEmergencyPhoneField').value,
+                address: document.getElementById('providerAddressField').value,
+                borough: document.getElementById('providerBoroughField').value,
+                serviceAreaZipCodes: document.getElementById('providerServiceAreaField').value,
+                position: document.getElementById('providerPositionField').value,
+                rate: parseFloat(document.getElementById('providerRateField').value) || 0,
+                paymentType: document.getElementById('providerPaymentTypeField').value,
+                generalAvailability: document.getElementById('providerGeneralAvailabilityField').value,
+                availabilityDays: document.getElementById('providerAvailabilityDaysField').value,
+                availabilityFrom: document.getElementById('providerAvailabilityFromField').value,
+                availabilityTill: document.getElementById('providerAvailabilityTillField').value,
+                startDate: document.getElementById('providerStartDateField').value,
+                status: document.getElementById('providerStatusField').value,
+                notes: document.getElementById('providerNotesField').value,
+                notes2: document.getElementById('providerNotes2Field').value,
+                lastModified: new Date().toISOString()
+            };
+            
+            localStorage.setItem('providers', JSON.stringify(providers));
+            console.log('✅ Provider details saved successfully');
+            
+            // Close modal and refresh table
+            const modal = bootstrap.Modal.getInstance(document.getElementById('providerDetailsModal'));
+            modal.hide();
+            
+            renderProvidersTable();
+            alert('✅ Provider details saved successfully!');
+        };
+        
+        window.addNewProvider = function() {
+            console.log('Adding new provider...');
+            
+            // Clear all fields
+            document.getElementById('providerIdField').value = `provider_${Date.now()}`;
+            document.getElementById('providerFirstNameField').value = '';
+            document.getElementById('providerLastNameField').value = '';
+            document.getElementById('providerLicenseField').value = '';
+            document.getElementById('providerLicenseStateField').value = '';
+            document.getElementById('providerEmailField').value = '';
+            document.getElementById('providerMobileField').value = '';
+            document.getElementById('providerEmergencyNameField').value = '';
+            document.getElementById('providerEmergencyPhoneField').value = '';
+            document.getElementById('providerAddressField').value = '';
+            document.getElementById('providerBoroughField').value = '';
+            document.getElementById('providerServiceAreaField').value = '';
+            document.getElementById('providerPositionField').value = '';
+            document.getElementById('providerRateField').value = '';
+            document.getElementById('providerPaymentTypeField').value = '';
+            document.getElementById('providerGeneralAvailabilityField').value = '';
+            document.getElementById('providerAvailabilityDaysField').value = '';
+            document.getElementById('providerAvailabilityFromField').value = '';
+            document.getElementById('providerAvailabilityTillField').value = '';
+            document.getElementById('providerStartDateField').value = '';
+            document.getElementById('providerStatusField').value = 'active';
+            document.getElementById('providerNotesField').value = '';
+            document.getElementById('providerNotes2Field').value = '';
+            
+            // Change modal title and save button behavior
+            document.getElementById('providerDetailsModalLabel').textContent = 'Add New Provider';
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('providerDetailsModal'));
+            modal.show();
+            
+            // Override save function for new provider
+            window.saveProviderDetails = function() {
+                console.log('Saving new provider...');
+                
+                const newProvider = {
+                    id: document.getElementById('providerIdField').value,
+                    firstName: document.getElementById('providerFirstNameField').value,
+                    lastName: document.getElementById('providerLastNameField').value,
+                    license: document.getElementById('providerLicenseField').value,
+                    licenseState: document.getElementById('providerLicenseStateField').value,
+                    email: document.getElementById('providerEmailField').value,
+                    mobile: document.getElementById('providerMobileField').value,
+                    emergencyContactName: document.getElementById('providerEmergencyNameField').value,
+                    emergencyContactPhone: document.getElementById('providerEmergencyPhoneField').value,
+                    address: document.getElementById('providerAddressField').value,
+                    borough: document.getElementById('providerBoroughField').value,
+                    serviceAreaZipCodes: document.getElementById('providerServiceAreaField').value,
+                    position: document.getElementById('providerPositionField').value,
+                    rate: parseFloat(document.getElementById('providerRateField').value) || 0,
+                    paymentType: document.getElementById('providerPaymentTypeField').value,
+                    generalAvailability: document.getElementById('providerGeneralAvailabilityField').value,
+                    availabilityDays: document.getElementById('providerAvailabilityDaysField').value,
+                    availabilityFrom: document.getElementById('providerAvailabilityFromField').value,
+                    availabilityTill: document.getElementById('providerAvailabilityTillField').value,
+                    startDate: document.getElementById('providerStartDateField').value,
+                    status: document.getElementById('providerStatusField').value,
+                    notes: document.getElementById('providerNotesField').value,
+                    notes2: document.getElementById('providerNotes2Field').value,
+                    dateCreated: new Date().toISOString(),
+                    lastModified: new Date().toISOString()
+                };
+                
+                // Validate required fields
+                if (!newProvider.firstName || !newProvider.lastName) {
+                    alert('❌ First Name and Last Name are required!');
+                    return;
+                }
+                
+                const providers = JSON.parse(localStorage.getItem('providers') || '[]');
+                providers.push(newProvider);
+                localStorage.setItem('providers', JSON.stringify(providers));
+                
+                console.log('✅ New provider added successfully');
+                
+                // Close modal and refresh table
+                const modal = bootstrap.Modal.getInstance(document.getElementById('providerDetailsModal'));
+                modal.hide();
+                
+                renderProvidersTable();
+                alert('✅ New provider added successfully!');
+                
+                // Restore original save function
+                window.saveProviderDetails = function() {
+                    // Original save function code here
+                };
+            };
+        };
+        
+        window.deleteProvider = function(providerId) {
+            console.log('Deleting provider ID:', providerId);
+            
+            if (!confirm('Are you sure you want to delete this provider? This action cannot be undone.')) {
+                return;
+            }
+            
+            const providers = JSON.parse(localStorage.getItem('providers') || '[]');
+            const filteredProviders = providers.filter(p => p.id !== providerId);
+            
+            localStorage.setItem('providers', JSON.stringify(filteredProviders));
+            console.log('✅ Provider deleted successfully');
+            
+            renderProvidersTable();
+            alert('✅ Provider deleted successfully!');
+        };
+        
+        window.renderProvidersTable = function() {
+            console.log('Rendering providers table...');
+            
+            const providers = JSON.parse(localStorage.getItem('providers') || '[]');
+            const tableBody = document.getElementById('providersTableBody');
+            
+            if (!tableBody) {
+                console.log('Providers table body not found');
+                return;
+            }
+            
+            // Apply search and filters
+            const searchTerm = document.getElementById('providerSearch')?.value?.toLowerCase() || '';
+            const statusFilter = document.getElementById('providerStatusFilter')?.value || '';
+            const specialtyFilter = document.getElementById('providerSpecialtyFilter')?.value || '';
+            
+            let filteredProviders = providers.filter(provider => {
+                const matchesSearch = !searchTerm || 
+                    (provider.firstName && provider.firstName.toLowerCase().includes(searchTerm)) ||
+                    (provider.lastName && provider.lastName.toLowerCase().includes(searchTerm)) ||
+                    (provider.email && provider.email.toLowerCase().includes(searchTerm)) ||
+                    (provider.mobile && provider.mobile.includes(searchTerm));
+                
+                const matchesStatus = !statusFilter || provider.status === statusFilter;
+                const matchesSpecialty = !specialtyFilter || provider.position === specialtyFilter;
+                
+                return matchesSearch && matchesStatus && matchesSpecialty;
+            });
+            
+            if (filteredProviders.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="fas fa-user-md fa-2x mb-3 d-block"></i>
+                            No providers found. Click "Add Provider" to get started.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Render provider rows with outer table columns: Name, Mobile Phone, Email, Rate, Position
+            tableBody.innerHTML = filteredProviders.map(provider => `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                <i class="fas fa-user-md text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">${(provider.firstName || '') + ' ' + (provider.lastName || '')}</h6>
+                                <small class="text-muted">${provider.position || 'Not specified'}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${provider.mobile || 'Not provided'}</td>
+                    <td>${provider.email || 'Not provided'}</td>
+                    <td>$${provider.rate || '0'}</td>
+                    <td>
+                        <span class="badge bg-${provider.position === 'PT' ? 'primary' : provider.position === 'PTA' ? 'info' : provider.position === 'OT' ? 'success' : provider.position === 'COTA' ? 'warning' : 'secondary'}">
+                            ${provider.position || 'Not specified'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewProviderDetails('${provider.id}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editProviderDetails('${provider.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteProvider('${provider.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            console.log(`✅ Rendered ${filteredProviders.length} providers`);
+        };
+        
+        // Provider CSV import function
+        window.directImportProviders = function() {
+            console.log('=== PROVIDER IMPORT STARTED ===');
+            
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.style.display = 'none';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                console.log('Provider import - File selected:', file.name);
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const csv = e.target.result;
+                        console.log('Provider import - CSV loaded, parsing...');
+                        
+                        const lines = csv.split('\n');
+                        const providers = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            if (!lines[i].trim()) continue;
+                            
+                            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                            if (values.length < 2) continue;
+                            
+                            // Map CSV columns to provider fields (23 headers)
+                            const provider = {
+                                id: (values[0] && values[0].trim()) ? values[0].trim() : `imported_provider_${Date.now()}_${i}`,
+                                firstName: values[1] || '',
+                                lastName: values[2] || '',
+                                license: values[3] || '',
+                                licenseState: values[4] || '',
+                                email: values[5] || '',
+                                mobile: values[6] || '',
+                                emergencyContactName: values[7] || '',
+                                emergencyContactPhone: values[8] || '',
+                                address: values[9] || '',
+                                borough: values[10] || '',
+                                serviceAreaZipCodes: values[11] || '',
+                                position: values[12] || '',
+                                rate: parseFloat(values[13]) || 0,
+                                paymentType: values[14] || '',
+                                generalAvailability: values[15] || '',
+                                availabilityDays: values[16] || '',
+                                availabilityFrom: values[17] || '',
+                                availabilityTill: values[18] || '',
+                                startDate: values[19] || '',
+                                status: (values[20] || 'active').toLowerCase(),
+                                notes: values[21] || '',
+                                notes2: values[22] || '',
+                                dateCreated: new Date().toISOString(),
+                                lastModified: new Date().toISOString()
+                            };
+                            
+                            if (provider.firstName && provider.lastName) {
+                                providers.push(provider);
+                            }
+                        }
+                        
+                        console.log('Provider import - Parsed providers:', providers.length);
+                        
+                        // Save to localStorage
+                        localStorage.setItem('providers', JSON.stringify(providers));
+                        console.log('✅ Provider import - Providers saved to localStorage');
+                        
+                        // Force UI refresh
+                        setTimeout(() => {
+                            // Re-render table
+                            if (typeof renderProvidersTable === 'function') {
+                                renderProvidersTable();
+                                console.log('✅ Provider import - Provider table refreshed');
+                            }
+                            
+                            // Navigate to Providers section if available
+                            if (typeof showSection === 'function') {
+                                showSection('providers');
+                            }
+                            
+                            // Update dashboard KPIs if available
+                            if (typeof updateKPIs === 'function') {
+                                updateKPIs();
+                            }
+                            
+                            // Fallback: if table body not found or empty, reload shortly after
+                            const tb = document.getElementById('providersTableBody');
+                            if (!tb || !tb.children || tb.children.length === 0) {
+                                setTimeout(() => { location.reload(); }, 900);
+                            }
+                        }, 100);
+                        
+                        alert(`✅ Provider Import Success! Imported ${providers.length} providers.`);
+                        
+                    } catch (error) {
+                        console.error('❌ Provider import error:', error);
+                        alert('❌ Provider Import Error: ' + error.message);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+        };
+        
+        // Initialize provider table on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                renderProvidersTable();
+            }, 500);
+        });
+        
+    </script>
+    <script>
+// Consolidated showSection function - replaces duplicate definitions
+function showSection(sectionId) {
+    console.log(`showSection('${sectionId}') called`);
+    
+    // Hide all sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+    });
+    
+    // Show selected section
+    const selectedSection = document.getElementById(sectionId);
+    if (selectedSection) {
+        selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
+        console.log(`Displaying section: ${sectionId}`);
+    } else {
+        console.error(`Section with ID '${sectionId}' not found`);
+    }
+    
+    // Update sidebar navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Load section-specific data
+    loadSectionData(sectionId);
+    
+    // Update URL hash
+    window.location.hash = sectionId;
+}
+
+// Load data for specific sections
+function loadSectionData(sectionId) {
+    console.log(`Loading data for section: ${sectionId}`);
+    
+    switch(sectionId) {
+        case 'providers':
+            setTimeout(() => {
+                if (typeof renderProvidersTable === 'function') {
+                    renderProvidersTable();
+                } else {
+                    console.warn('renderProvidersTable function not found');
+                }
+            }, 100);
+            break;
+        case 'patients':
+            setTimeout(() => {
+                if (typeof renderPatientsTable === 'function') {
+                    renderPatientsTable();
+                }
+            }, 100);
+            break;
+        case 'dashboard':
+            setTimeout(() => {
+                if (typeof updateDashboard === 'function') {
+                    updateDashboard();
+                } else if (typeof initializeDashboard === 'function') {
+                    initializeDashboard();
+                }
+            }, 100);
+            break;
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Initializing page');
+    
+    // Hide all sections except active
+    document.querySelectorAll('.content-section').forEach(section => {
+        if (!section.classList.contains('active')) {
+            section.style.display = 'none';
+        }
+    });
+    
+    // Show default section (patients)
+    setTimeout(() => {
+        showSection('patients');
+    }, 200);
+});
+</script>
+</body>
+</html>
